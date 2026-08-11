@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>Luma</title>
+  <meta name="theme-color" content="#0b0b10" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Luma" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="lib/jsmediatags.min.js" defer></script>
+  <script src="js/db.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+
+  <!-- BOOT -->
+  <div id="boot">
+    <div class="boot-title">L U M A</div>
+    <div class="boot-sub">Music</div>
+    <div class="boot-eq"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="boot-sign">made by its.austin</div>
+  </div>
+
+  <!-- MOBILE TOP BAR -->
+  <div id="topbar">
+    <button class="tb-icon" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    <span class="tb-brand">LUMA</span>
+    <button class="tb-icon" id="topAdd" aria-label="Add music"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+  </div>
+
+  <div id="scrim"></div>
+
+  <div id="app">
+    <!-- SIDEBAR (also the mobile drawer) -->
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-dot"></span><span class="brand-name">LUMA</span></div>
+      <nav class="nav">
+        <button class="nav-pill active" data-view="songs"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>All Songs</span></button>
+        <button class="nav-pill" data-view="favorites"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Favorites</span></button>
+        <button class="nav-pill" data-view="albums"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg><span>Albums</span></button>
+        <button class="nav-pill" data-view="atelier"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Atelier</span></button>
+      </nav>
+      <div class="pl-head">
+        <span>Playlists</span>
+        <button class="pl-new" id="newPlaylistBtn" title="New playlist"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      </div>
+      <div class="pl-list" id="playlistList"></div>
+      <div class="side-actions">
+        <button class="side-btn" id="addFolderBtn"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Open folder</button>
+        <button class="side-btn" id="addFilesBtn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add songs</button>
+      </div>
+      <div class="side-foot">
+        <div class="foot-row"><span>Songs</span><b id="statSongs">0</b></div>
+        <div class="foot-sign">made by its.austin</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="main">
+      <!-- top hero -->
+      <div class="hero" id="hero">
+        <div class="hero-mark">♪</div>
+        <div class="hero-text">
+          <div class="hero-kicker" id="heroKicker">YOUR LIBRARY</div>
+          <h1 id="heroTitle">All Songs</h1>
+          <div class="hero-sub" id="heroSub">0 songs</div>
+        </div>
+        <div class="hero-actions">
+          <button class="play-lg" id="playAll"><span>▶</span> Play</button>
+          <button class="shuffle-lg" id="shuffleAll" title="Shuffle"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" placeholder="Search songs, artists, albums…" /></div>
+        <div class="spacer"></div>
+        <button class="btn-ghost" id="refreshBtn" title="Re-scan your folder"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.8 1 6.4 2.6"/><path d="M21 3v6h-6"/></svg> Refresh</button>
+        <select class="sortsel" id="sortSel">
+          <option value="added">Recently added</option>
+          <option value="title">Title</option>
+          <option value="artist">Artist</option>
+          <option value="album">Album</option>
+          <option value="plays">Most played</option>
+        </select>
+      </div>
+
+      <!-- SONG LIST -->
+      <div class="listwrap" id="listwrap">
+        <div class="list-head"><span class="c-idx">#</span><span class="c-title">Title</span><span class="c-album">Album</span><span class="c-plays">Plays</span><span class="c-dur">⏱</span><span class="c-act"></span></div>
+        <div class="list" id="list"></div>
+        <div class="empty" id="emptyState" hidden>
+          <div class="empty-ic">♪</div>
+          <h3 id="emptyH">No songs yet</h3>
+          <p id="emptyP">Tap <b>Open folder</b> to point Luma at your music, or <b>Add songs</b> to pick individual tracks. Luma plays them straight from your phone — nothing is copied.</p>
+          <div class="empty-actions"><button class="play-lg" id="emptyWatch"><span>📁</span> Open folder</button><button class="btn-ghost" id="emptyAdd">Add songs</button></div>
+        </div>
+      </div>
+
+      <!-- ALBUMS -->
+      <div class="albums" id="albums" hidden></div>
+
+      <!-- ATELIER -->
+      <div class="panel" id="atelier" hidden>
+        <div class="sec"><h2>Interface theme</h2></div>
+        <div class="mode-toggle" id="modeToggle"></div>
+        <div class="presets" id="presets"></div>
+        <div class="sec"><h2>Fine-tune colours</h2></div>
+        <div class="color-rows" id="colorRows"></div>
+        <div class="sec"><h2>Library</h2></div>
+        <div class="watched" id="watched"></div>
+        <label class="set-row"><span>Re-scan the chosen folder on launch</span><input type="checkbox" id="prefAutoscan" checked /></label>
+        <div class="set-foot" id="vaultInfo">Detecting…</div>
+        <div class="support-sign">made by its.austin</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- NOW PLAYING BAR -->
+  <div id="nowbar" class="hidden">
+    <div class="nb-left">
+      <div class="nb-art" id="nbArt"></div>
+      <div class="nb-meta"><div class="nb-title" id="nbTitle">—</div><div class="nb-artist" id="nbArtist"></div></div>
+      <button class="nb-fav" id="nbFav" title="Favorite"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+    </div>
+    <div class="nb-center">
+      <div class="nb-controls">
+        <button class="nb-btn" id="nbShuffle" title="Shuffle"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+        <button class="nb-btn" id="nbPrev"><svg viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></button>
+        <button class="nb-btn play" id="nbPlay"><svg viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4"/></svg></button>
+        <button class="nb-btn" id="nbNext"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
+        <button class="nb-btn" id="nbRepeat" title="Repeat"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+      </div>
+      <div class="nb-seek"><span id="nbCur">0:00</span><input type="range" id="nbSeek" min="0" max="1000" value="0" /><span id="nbDur">0:00</span></div>
+    </div>
+    <div class="nb-right">
+      <button class="nb-btn small" id="nbMute"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></button>
+      <input type="range" id="nbVol" min="0" max="100" value="90" class="nb-vol" />
+    </div>
+  </div>
+
+  <!-- playlist picker popover -->
+  <div id="plPicker" class="pl-picker" hidden>
+    <div class="pl-picker-inner">
+      <div class="pl-picker-head">Add to playlist</div>
+      <div class="pl-picker-body" id="plPickerBody"></div>
+      <button class="pl-picker-new" id="plPickerNew"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New playlist…</button>
+    </div>
+  </div>
+
+  <!-- drop overlay (desktop browsers) -->
+  <div id="dropzone"><div class="dz-inner"><div class="dz-ic">♪</div><div>Drop to add to Luma</div></div></div>
+
+  <!-- hidden native pickers -->
+  <input type="file" id="filePick" accept="audio/*,.mp3,.flac,.m4a,.aac,.ogg,.oga,.opus,.wav,.wma" multiple hidden />
+  <input type="file" id="folderPick" webkitdirectory directory multiple hidden />
+
+  <div id="toast"></div>
+
+  <script>
+    // register the service worker so Luma installs & works offline as a PWA
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
