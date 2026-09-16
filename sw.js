@@ -2,13 +2,16 @@
    Caches the app shell so Luma launches offline and installs to the home
    screen. It never caches your audio: songs are referenced in place from the
    phone and streamed by the browser directly, never copied. */
-const CACHE = "luma-shell-v1";
+const CACHE = "luma-2.0.0";   // bump to release the update to installed PWAs
 const SHELL = [
   "index.html",
   "manifest.webmanifest",
   "css/styles.css",
   "js/app.js",
   "js/db.js",
+  "js/engine.js",
+  "js/views.js",
+  "js/migrate.js",
   "lib/jsmediatags.min.js",
   "icon.png",
   "icon-192.png",

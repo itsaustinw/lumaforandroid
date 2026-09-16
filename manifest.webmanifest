@@ -1,6 +1,7 @@
 {
   "name": "Luma — Music",
   "short_name": "Luma",
+  "version": "2.0.0",
   "description": "A standalone music player. Part of the light family. Made by its.austin.",
   "start_url": "index.html",
   "scope": "./",
