@@ -245,53 +245,86 @@ input[type=range]:hover::-webkit-slider-thumb { background:var(--accent); }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* ===========================  MOBILE (phone)  =========================== */
+/* ==========================================================================
+   MOBILE (phones) — Spotify-style shape: bottom tab bar, big touch rows,
+   Search + Your Library tabs, floating mini-player. Luma identity kept
+   (Cinzel wordmark, accent-green, hero glow, "made by its.austin").
+   Everything here is gated to phone widths so desktop is untouched.
+   ========================================================================= */
 @media (max-width:820px){
+  :root { --tabbar-h:calc(58px + env(safe-area-inset-bottom)); --nb-h:64px; }
   body { font-size:15px; }
   #topbar { display:flex; }
+
+  /* single-column app; leave room for the bottom tab bar */
   #app { grid-template-columns:1fr; height:calc(100vh - 52px - env(safe-area-inset-top)); }
-  body.playing #app { height:calc(100vh - 52px - env(safe-area-inset-top) - var(--nb-h)); }
+  /* hide the desktop sidebar entirely — nav lives in the bottom tabs + Library tab */
+  .sidebar { display:none; }
+  #scrim { display:none !important; }
 
-  /* sidebar becomes a slide-in drawer */
-  .sidebar { position:fixed; top:0; left:0; bottom:0; width:280px; max-width:84vw; z-index:815;
-    transform:translateX(-100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
-    padding-top:calc(22px + env(safe-area-inset-top)); overflow-y:auto; box-shadow:0 0 40px rgba(0,0,0,.5); }
-  body.drawer-open .sidebar { transform:translateX(0); }
-  body.drawer-open #scrim { display:block; opacity:1; }
-  .pl-list { max-height:none; }
+  .main { padding-bottom:var(--tabbar-h); }
+  /* when a track is loaded, the floating mini-player sits above the tabs */
+  body.playing .main { padding-bottom:calc(var(--tabbar-h) + var(--nb-h) + 8px); }
 
-  /* hero stacks */
-  .hero { flex-direction:column; align-items:flex-start; gap:14px; padding:20px 18px 16px; }
-  .hero-mark { width:112px; height:112px; font-size:3rem; }
-  .hero-text h1 { font-size:2rem; }
+  /* hero stacks, big and bold like a Spotify header */
+  .hero { flex-direction:column; align-items:flex-start; gap:14px; padding:18px 16px 14px; }
+  .hero-mark { width:120px; height:120px; font-size:3rem; border-radius:8px; }
+  .hero-text h1 { font-size:2.1rem; }
   .hero-actions { margin-left:0; width:100%; }
-  .play-lg { flex:1; justify-content:center; }
+  .play-lg { flex:1; justify-content:center; height:48px; }
+  .shuffle-lg { width:48px; height:48px; }
 
-  /* toolbar wraps; search full-width */
-  .toolbar { flex-wrap:wrap; padding:8px 16px 12px; gap:10px; }
-  .search { order:3; width:100%; } .search input { width:100%; }
-  .toolbar .spacer { display:none; }
+  /* toolbar: hide the desktop search (Search is now its own tab); keep sort+refresh */
+  .toolbar { padding:6px 16px 10px; gap:10px; }
+  .toolbar .search { display:none; }
+  .toolbar .spacer { flex:1; }
+  .btn-ghost { padding:9px 14px; }
 
-  /* song rows: drop album + plays columns, roomier touch targets */
-  .list-head,.row { grid-template-columns:30px 1fr 52px 76px; gap:10px; padding:0 8px; }
-  .c-album,.r-album,.c-plays,.r-plays { display:none; }
-  .row { height:60px; }
-  .listwrap { padding:0 10px 30px; }
-  .list-head { top:0; }
-  /* always show fav/add/remove on touch (no hover) */
-  .r-fav,.r-add,.r-menu { opacity:1; }
+  /* SONG ROWS — big, tappable, art-forward (Spotify list style) */
+  .list-head { display:none; }               /* no column header on mobile */
+  .listwrap { padding:2px 8px 20px; }
+  .row { display:flex; align-items:center; gap:12px; height:64px; padding:0 8px; border-radius:8px; }
+  .r-idx { display:none; }                    /* no track numbers on mobile */
+  .r-main { flex:1; min-width:0; }
+  .r-art { width:52px; height:52px; border-radius:6px; }
+  .r-title { font-size:.95rem; }
+  .r-artist { font-size:.8rem; }
+  .c-album,.r-album,.c-plays,.r-plays,.c-dur,.r-dur { display:none; }
+  .r-act { gap:2px; }
+  .r-fav,.r-add,.r-menu { opacity:1; width:40px; height:40px; display:grid; place-items:center; }
+  .r-fav svg,.r-add svg { width:20px; height:20px; }
 
-  .albums { grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); padding:8px 16px 40px; gap:16px; }
-  .panel { padding:16px 16px 60px; }
+  .albums { grid-template-columns:repeat(2,1fr); padding:8px 16px 24px; gap:16px; }
+  .panel { padding:14px 16px 40px; }
   .presets { grid-template-columns:repeat(2,1fr); }
 
-  /* now-playing bar: compact 2-zone layout, controls centred */
-  #nowbar { grid-template-columns:1fr auto; gap:10px; padding:6px 12px calc(6px + env(safe-area-inset-bottom)); height:auto; }
-  .nb-left { grid-column:1; }
-  .nb-center { grid-column:1 / -1; grid-row:2; }
-  .nb-right { grid-column:2; grid-row:1; }
-  .nb-vol { display:none; }         /* phones use hardware volume */
-  .nb-seek { max-width:none; }
-  :root { --nb-h:132px; }
+  /* ---- FLOATING MINI-PLAYER (sits above the tab bar) ---- */
+  #nowbar { left:8px; right:8px; bottom:calc(var(--tabbar-h) + 6px); width:auto;
+    height:var(--nb-h); display:flex; align-items:center; gap:10px;
+    border-radius:12px; border:1px solid var(--line);
+    background:color-mix(in srgb, var(--panel2) 94%, var(--accent) 6%);
+    box-shadow:0 10px 30px rgba(0,0,0,.5); padding:0 8px 0 8px; z-index:860; }
+  .nb-left { flex:1; min-width:0; gap:10px; }
+  .nb-art { width:46px; height:46px; }
+  .nb-fav { display:flex; }
+  /* collapse the full transport in the mini bar — just play + next (Spotify) */
+  .nb-center { flex:none; order:3; }
+  .nb-controls { gap:6px; }
+  #nbShuffle,#nbPrev,#nbRepeat { display:none; }
+  .nb-seek { display:none; }
+  .nb-right { flex:none; order:4; }
+  #nbQueue,#nbMute,.nb-vol { display:none; }
+  .nb-btn.play { width:40px; height:40px; }
+  /* a thin progress line along the top of the mini bar */
+  #nbMiniProg { position:absolute; left:10px; right:10px; top:4px; height:2px; border-radius:2px; background:rgba(255,255,255,.14); overflow:hidden; }
+  #nbMiniProg i { display:block; height:100%; width:0; background:var(--accent); }
+
+  /* ---- BOTTOM TAB BAR ---- */
+  body #tabbar { display:flex; }
+
+  /* Search + Library screens */
+  .searchview,.libraryview { padding:14px 16px calc(var(--tabbar-h) + 20px); }
+  body.playing .searchview, body.playing .libraryview { padding-bottom:calc(var(--tabbar-h) + var(--nb-h) + 20px); }
 }
 
 /* desktop-browser fallback (wide window): keep collapsed rail like desktop */
@@ -441,6 +474,58 @@ body.q-open #queuePanel { transform:translateX(0); }
   #queuePanel { width:100%; max-width:100%; }
   .eq-band input[type=range] { height:100px; }
 }
+
+/* ==========================================================================
+   MOBILE COMPONENTS — bottom tab bar, Search screen, Your Library hub.
+   Base styles here; visibility is controlled by the mobile media query above.
+   ========================================================================= */
+#tabbar { display:none; position:fixed; left:0; right:0; bottom:0; z-index:870;
+  height:calc(58px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom);
+  background:color-mix(in srgb, var(--bg2) 88%, transparent);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--line); }
+#tabbar .tab { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  color:var(--text-dim); font-size:.62rem; letter-spacing:.02em; font-weight:500; }
+#tabbar .tab svg { width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.7; }
+#tabbar .tab.active { color:var(--text-bright); }
+#tabbar .tab.active svg { stroke:var(--accent); }
+#tabbar .tab:active { transform:scale(.94); }
+
+/* Search screen */
+.searchview[hidden],.libraryview[hidden]{ display:none; }
+.sv-title,.lv-title { font-family:var(--font-head); font-size:1.7rem; color:var(--text-bright); margin:6px 0 14px; }
+.sv-field { display:flex; align-items:center; gap:10px; background:#ffffff; border-radius:8px; padding:12px 14px; margin-bottom:18px; }
+html[data-mode="dark"] .sv-field { background:var(--panel2); }
+.sv-field svg { width:20px; height:20px; stroke:var(--text-dim); fill:none; stroke-width:2; flex:none; }
+html[data-mode="dark"] .sv-field svg { stroke:var(--text); }
+.sv-field input { flex:1; border:none; background:none; outline:none; font-size:.95rem; color:var(--text-bright); }
+.sv-field input::placeholder { color:var(--text-dim); }
+.sv-hint { color:var(--text-dim); font-size:.86rem; padding:24px 4px; text-align:center; line-height:1.6; }
+.sv-results { display:flex; flex-direction:column; gap:2px; }
+.srow { display:flex; align-items:center; gap:12px; padding:8px; border-radius:8px; }
+.srow:active { background:var(--panel); }
+.srow .r-art { width:50px; height:50px; border-radius:6px; flex:none; overflow:hidden; background:var(--panel2); display:grid; place-items:center; }
+.srow .r-art img { width:100%; height:100%; object-fit:cover; } .srow .r-art .ph { color:var(--text-dim); }
+.srow .r-txt { flex:1; min-width:0; }
+.srow .r-add { width:40px; height:40px; display:grid; place-items:center; color:var(--text-dim); flex:none; }
+.srow .r-add svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; }
+
+/* Your Library hub */
+.lv-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+.lv-chip { padding:8px 15px; border-radius:999px; background:var(--panel2); color:var(--text); font-size:.8rem; }
+.lv-chip:active { background:var(--hover); }
+.lv-actions { display:flex; flex-direction:column; gap:2px; margin-bottom:14px; }
+.lv-row-btn { display:flex; align-items:center; gap:14px; padding:12px 6px; text-align:left; color:var(--text-bright); font-size:.92rem; }
+.lv-row-btn:active { background:var(--panel); border-radius:8px; }
+.lv-ic { width:40px; height:40px; border-radius:6px; display:grid; place-items:center; background:var(--panel2); color:var(--accent); font-size:1.1rem; flex:none; }
+.lv-sec { font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-dim); margin:10px 4px; }
+.lv-playlists { display:flex; flex-direction:column; gap:4px; }
+.lv-pl { display:flex; align-items:center; gap:12px; padding:8px; border-radius:8px; text-align:left; width:100%; }
+.lv-pl:active { background:var(--panel); }
+.lv-pl-art { width:56px; height:56px; border-radius:6px; overflow:hidden; background:var(--panel2); display:grid; place-items:center; flex:none; }
+.lv-pl-art img { width:100%; height:100%; object-fit:cover; } .lv-pl-art .ph { color:var(--text-dim); font-size:1.4rem; }
+.lv-pl-name { font-size:.92rem; color:var(--text-bright); }
+.lv-pl-sub { font-size:.76rem; color:var(--text-dim); margin-top:2px; }
 
 /* ---- Musicolet migration ---- */
 .migrate-help { font-size:.78rem; line-height:1.6; color:var(--text-dim); margin:6px 0 14px; }

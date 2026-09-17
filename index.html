@@ -35,7 +35,6 @@
 
   <!-- MOBILE TOP BAR -->
   <div id="topbar">
-    <button class="tb-icon" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
     <span class="tb-brand">LUMA</span>
     <button class="tb-icon" id="topAdd" aria-label="Add music"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
@@ -124,6 +123,33 @@
       <!-- WRAPPED / STATS -->
       <div class="wrapped" id="wrapped" hidden></div>
 
+      <!-- SEARCH (mobile tab) -->
+      <div class="searchview" id="searchview" hidden>
+        <h1 class="sv-title">Search</h1>
+        <div class="sv-field"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput2" placeholder="Songs, artists, albums" /></div>
+        <div class="sv-results" id="svResults"></div>
+      </div>
+
+      <!-- YOUR LIBRARY (mobile tab hub) -->
+      <div class="libraryview" id="libraryview" hidden>
+        <h1 class="lv-title">Your Library</h1>
+        <div class="lv-chips">
+          <button class="lv-chip" data-go="songs">Songs</button>
+          <button class="lv-chip" data-go="favorites">Favourites</button>
+          <button class="lv-chip" data-go="albums">Albums</button>
+          <button class="lv-chip" data-go="artists">Artists</button>
+          <button class="lv-chip" data-go="wrapped">Wrapped</button>
+          <button class="lv-chip" data-go="atelier">Settings</button>
+        </div>
+        <div class="lv-actions">
+          <button class="lv-row-btn" id="lvNewPlaylist"><span class="lv-ic">＋</span> New playlist</button>
+          <button class="lv-row-btn" id="lvOpenFolder"><span class="lv-ic">📁</span> Open folder</button>
+          <button class="lv-row-btn" id="lvAddSongs"><span class="lv-ic">♪</span> Add songs</button>
+        </div>
+        <div class="lv-sec">Playlists</div>
+        <div class="lv-playlists" id="lvPlaylists"></div>
+      </div>
+
       <!-- ATELIER -->
       <div class="panel" id="atelier" hidden>
         <div class="sec"><h2>Interface theme</h2></div>
@@ -149,8 +175,16 @@
     </main>
   </div>
 
+  <!-- MOBILE BOTTOM TAB BAR (Spotify-style) -->
+  <nav id="tabbar">
+    <button class="tab" data-view="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Home</span></button>
+    <button class="tab" data-view="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></button>
+    <button class="tab" data-view="library"><svg viewBox="0 0 24 24"><path d="M4 5h10M4 10h10M4 15h7"/><circle cx="18" cy="16" r="3"/><path d="M21 16V8l-3 1"/></svg><span>Your Library</span></button>
+  </nav>
+
   <!-- NOW PLAYING BAR -->
   <div id="nowbar" class="hidden">
+    <div id="nbMiniProg"><i></i></div>
     <div class="nb-left">
       <div class="nb-art" id="nbArt"></div>
       <div class="nb-meta" id="nbMeta"><div class="nb-title" id="nbTitle">—</div><div class="nb-artist" id="nbArtist"></div></div>

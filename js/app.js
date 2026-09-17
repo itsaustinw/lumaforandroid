@@ -169,14 +169,19 @@ function render(){
   $("#home").hidden=view!=="home";
   $("#wrapped").hidden=view!=="wrapped";
   $("#atelier").hidden=view!=="atelier";
-  const noHero=view==="atelier"||view==="home"||view==="wrapped";
+  const sv=$("#searchview"); if(sv)sv.hidden=view!=="search";
+  const lv=$("#libraryview"); if(lv)lv.hidden=view!=="library";
+  const noHero=view==="atelier"||view==="home"||view==="wrapped"||view==="search"||view==="library";
   $("#hero").hidden=noHero;
   const tb=document.querySelector(".toolbar"); if(tb)tb.hidden=noHero;
+  syncTabbar();
   renderPlaylistNav();
   if(view==="home"){renderHome();return;}
   if(view==="wrapped"){renderWrapped();return;}
   if(view==="artists"){renderArtists();return;}
   if(view==="albums"){renderAlbums();return;}
+  if(view==="search"){renderSearch();return;}
+  if(view==="library"){renderLibraryHub();return;}
   if(view==="atelier"){buildPlaybackPanel();return;}
   const l=currentList();
   const pl=(view==="playlist"&&curPlaylist)?getPlaylist(curPlaylist):null;
@@ -218,6 +223,34 @@ function renderAlbums(){
 }
 function markRow(){ $$("#list .row").forEach(r=>r.classList.toggle("playing",engine.cur&&r.dataset.id===engine.cur.id)); }
 
+/* ---- mobile: bottom tab bar ---- */
+// which underlying view each bottom tab maps to (for highlight)
+const TAB_OF={home:"home",search:"search",songs:"library",favorites:"library",albums:"library",artists:"library",wrapped:"library",atelier:"library",playlist:"library",library:"library"};
+function syncTabbar(){ const active=TAB_OF[view]||"home"; $$("#tabbar .tab").forEach(b=>b.classList.toggle("active",b.dataset.view===active)); }
+
+/* ---- mobile: Search screen ---- */
+function renderSearch(){
+  const q=search.trim().toLowerCase();
+  const box=$("#svResults"); if(!box)return;
+  if(!q){ box.innerHTML=`<div class="sv-hint">Find any song, artist or album in your library.</div>`; return; }
+  const l=all.filter(t=>((t.title||"")+" "+(t.artist||"")+" "+(t.album||"")).toLowerCase().includes(q)).slice(0,80);
+  if(!l.length){ box.innerHTML=`<div class="sv-hint">No results for “${esc(search)}”.</div>`; return; }
+  box.innerHTML=l.map(t=>`<div class="srow" data-id="${t.id}"><div class="r-art">${artHTML(t)}</div><div class="r-txt"><div class="r-title">${esc(t.title)}</div><div class="r-artist">${esc(t.artist||"Unknown Artist")}</div></div><button class="r-add" data-act="add" title="Add to playlist"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>`).join("");
+  const ids=l.map(t=>t.id);
+  $$("#svResults .srow").forEach(r=>r.addEventListener("click",e=>{const id=r.dataset.id;if(e.target.closest("[data-act=add]")){e.stopPropagation();openPlPicker(id,e.target.closest("[data-act=add]"));return;}engine.play(ids,id);}));
+}
+
+/* ---- mobile: Your Library hub ---- */
+function renderLibraryHub(){
+  const box=$("#lvPlaylists"); if(!box)return;
+  const pls=playlists();
+  box.innerHTML=pls.length?pls.map(p=>{
+    const art=(p.songs.map(id=>byId.get(id)).find(t=>t&&t.art)||{}).art;
+    return `<button class="lv-pl" data-pid="${p.id}"><div class="lv-pl-art">${art?`<img src="${esc(art)}">`:`<span class="ph">♪</span>`}</div><div class="lv-pl-txt"><div class="lv-pl-name">${esc(p.name)}</div><div class="lv-pl-sub">Playlist · ${p.songs.length} song${p.songs.length===1?"":"s"}</div></div></button>`;
+  }).join(""):`<div class="sv-hint">No playlists yet. Tap <b>New playlist</b> to make one.</div>`;
+  $$("#lvPlaylists .lv-pl").forEach(b=>b.addEventListener("click",()=>openPlaylist(b.dataset.pid)));
+}
+
 function _el(){ return engine._P&&engine._P()?engine._P().el:(engine._fb||null); }
 function renderNow(){
   const t=engine.cur; if(!t){$("#nowbar").classList.add("hidden");document.body.classList.remove("playing");closeNowPlaying();return;}
@@ -236,6 +269,7 @@ function renderPlay(){ const el=_el(); const p=engine.cur&&el&&!el.paused; const
 function renderProgress(){ const el=_el(); if(!el)return; const d=el.duration,c=el.currentTime; const f=d&&isFinite(d)?c/d:0;
   const s=$("#nbSeek"); if(s&&document.activeElement!==s)s.value=Math.round(f*1000); $("#nbCur").textContent=fmt(c); if(engine.cur&&d)$("#nbDur").textContent=fmt(d);
   const ns=$("#npSeek"); if(ns&&document.activeElement!==ns)ns.value=Math.round(f*1000); const nc=$("#npCur"); if(nc)nc.textContent=fmt(c); const nd=$("#npDur"); if(nd&&d)nd.textContent=fmt(d);
+  const mp=$("#nbMiniProg>i"); if(mp)mp.style.width=(f*100)+"%";
 }
 function renderVol(){ const muted=engine.muted||engine.vol===0; const v=$("#nbVol"); if(v)v.value=Math.round((muted?0:engine.vol)*100); $("#nbMute").innerHTML=muted?'<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>':'<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>'; }
 
@@ -369,9 +403,18 @@ async function init(){
 
   const on=(id,fn)=>{const e=$(id);if(e)e.addEventListener("click",fn);};
   $$(".nav-pill").forEach(p=>p.addEventListener("click",()=>{switchView(p.dataset.view);closeDrawer();}));
-  // mobile drawer (hamburger)
+  // mobile bottom tab bar
+  $$("#tabbar .tab").forEach(b=>b.addEventListener("click",()=>{ switchView(b.dataset.view); if(b.dataset.view==="search"){const s=$("#searchInput2");if(s)setTimeout(()=>s.focus(),60);} }));
+  // mobile drawer (legacy, harmless if present)
   on("#menuBtn",openDrawer); on("#scrim",closeDrawer);
-  $("#searchInput").addEventListener("input",e=>{search=e.target.value;render();});
+  // keep the two search inputs (desktop toolbar + mobile Search tab) in sync
+  const syncSearch=v=>{search=v;const a=$("#searchInput"),b=$("#searchInput2");if(a&&a.value!==v)a.value=v;if(b&&b.value!==v)b.value=v;render();};
+  $("#searchInput").addEventListener("input",e=>syncSearch(e.target.value));
+  const si2=$("#searchInput2"); if(si2)si2.addEventListener("input",e=>syncSearch(e.target.value));
+  // library hub actions
+  on("#lvNewPlaylist",()=>{const nn=prompt("New playlist name","My Playlist");if(nn!=null){const p=createPlaylist(nn);openPlaylist(p.id);}});
+  on("#lvOpenFolder",watchFolder); on("#lvAddSongs",addFiles);
+  $$("#libraryview .lv-chip").forEach(c=>c.addEventListener("click",()=>switchView(c.dataset.go)));
   $("#sortSel").addEventListener("change",e=>{sort=e.target.value;render();});
   on("#refreshBtn",async()=>{await rescanSavedHandle();await refresh();toast("Refreshed");});
   on("#addFilesBtn",()=>{addFiles();closeDrawer();}); on("#emptyAdd",addFiles);
